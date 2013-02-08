@@ -27,7 +27,6 @@ Source4: scriptstub.c
 Source5: my_config.h
 Source6: README.mysql-docs
 Source7: README.mysql-license
-Source8: libmysql.version
 Source9: mysql-embedded-check.c
 Source10: mysql.tmpfiles.d
 Source11: mysqld.service
