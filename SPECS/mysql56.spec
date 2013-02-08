@@ -1,3 +1,5 @@
+%global basever 5.6
+
 Name: mysql56
 Version: 5.6.10
 Release: 1%{?dist}
@@ -79,6 +81,10 @@ Conflicts: MySQL
 # mysql-cluster used to be built from this SRPM, but no more
 Obsoletes: mysql-cluster < 5.1.44
 
+# IUS-isms
+Conflicts: mysql < %{basever}
+Provides: mysql = %{version}-%{release}
+
 # When rpm 4.9 is universal, this could be cleaned up:
 %global __perl_requires %{SOURCE999}
 %global __perllib_requires %{SOURCE999}
@@ -94,6 +100,11 @@ contains the standard MySQL client programs and generic MySQL files.
 Summary: The shared libraries required for MySQL clients
 Group: Applications/Databases
 Requires: /sbin/ldconfig
+
+# IUS-isms
+Conflicts: mysql-libs < %{basever}
+Provides: mysql-libs = %{version}-%{release}
+Provides: config(mysql-libs) = %{version}-%{release}
 
 %description libs
 The mysql-libs package provides the essential shared libraries for any 
@@ -131,6 +142,11 @@ Requires(post): systemd-sysv
 Requires: perl-DBI, perl-DBD-MySQL
 Conflicts: MySQL-server
 
+# IUS-isms
+Conflicts: mysql-server < %{basever}
+Provides: mysql-server = %{version}-%{release}
+Provides: config(mysql-server) = %{version}-%{release}
+
 %description server
 MySQL is a multi-user, multi-threaded SQL database server. MySQL is a
 client/server implementation consisting of a server daemon (mysqld)
@@ -146,6 +162,10 @@ Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: openssl-devel%{?_isa}
 Conflicts: MySQL-devel
 
+# IUS-isms
+Conflicts: mysql-devel < %{basever}
+Provides: mysql-devel = %{version}-%{release}
+
 %description devel
 MySQL is a multi-user, multi-threaded SQL database server. This
 package contains the libraries and header files that are needed for
@@ -155,6 +175,10 @@ developing MySQL client applications.
 
 Summary: MySQL as an embeddable library
 Group: Applications/Databases
+
+# IUS-isms
+Conflicts: mysql-embedded < %{basever}
+Provides: mysql-embedded = %{version}-%{release}
 
 %description embedded
 MySQL is a multi-user, multi-threaded SQL database server. This
@@ -168,6 +192,10 @@ Group: Applications/Databases
 Requires: %{name}-embedded%{?_isa} = %{version}-%{release}
 Requires: %{name}-devel%{?_isa} = %{version}-%{release}
 
+# IUS-isms
+Conflicts: mysql-embedded-devel < %{basever}
+Provides: mysql-embedded-devel = %{version}-%{release}
+
 %description embedded-devel
 MySQL is a multi-user, multi-threaded SQL database server. This
 package contains files needed for developing and testing with
@@ -179,6 +207,10 @@ Summary: MySQL benchmark scripts and data
 Group: Applications/Databases
 Requires: %{name}%{?_isa} = %{version}-%{release}
 Conflicts: MySQL-bench
+
+# IUS-isms
+Conflicts: mysql-bench < %{basever}
+Provides: mysql-bench = %{version}-%{release}
 
 %description bench
 MySQL is a multi-user, multi-threaded SQL database server. This
@@ -193,6 +225,10 @@ Requires: %{name}%{?_isa} = %{version}-%{release}
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: %{name}-server%{?_isa} = %{version}-%{release}
 Conflicts: MySQL-test
+
+# IUS-isms
+Conflicts: mysql-test < %{basever}
+Provides: mysql-test = %{version}-%{release}
 
 %description test
 MySQL is a multi-user, multi-threaded SQL database server. This
@@ -259,7 +295,8 @@ CFLAGS="$CFLAGS -fPIC"
 %ifarch sparc sparcv9 sparc64
 CFLAGS=`echo $CFLAGS| sed -e "s|-O2|-O1|g" `
 %endif
-CXXFLAGS="$CFLAGS"
+# extra C++ flags as per recommendations in mysql's INSTALL-SOURCE doc
+CXXFLAGS="$CFLAGS -felide-constructors -fno-rtti -fno-exceptions"
 export CFLAGS CXXFLAGS
 
 # The INSTALL_xxx macros have to be specified relative to CMAKE_INSTALL_PREFIX
@@ -350,6 +387,9 @@ cd ../..
 
 %install
 rm -rf $RPM_BUILD_ROOT
+mkdir -p %{buildroot}/var/log/mysql \
+         %{buildroot}/var/lib/mysqllogs \
+         %{buildroot}/var/lib/mysqltmp
 
 make DESTDIR=$RPM_BUILD_ROOT install
 
@@ -716,6 +756,10 @@ fi
 %attr(0755,mysql,mysql) %dir /var/lib/mysql
 %attr(0640,mysql,mysql) %config(noreplace) %verify(not md5 size mtime) /var/log/mysqld.log
 %config(noreplace) %{_sysconfdir}/logrotate.d/mysqld
+%attr(0755,mysql,mysql) %dir /var/lib/mysqltmp/
+%attr(0755,mysql,mysql) %dir /var/lib/mysqllogs
+%attr(0755,mysql,mysql) %dir /var/log/mysql/
+
 
 %files devel
 %defattr(-,root,root)
