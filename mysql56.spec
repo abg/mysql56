@@ -389,9 +389,6 @@ mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/tmpfiles.d
 install -m 0644 %{SOURCE10} $RPM_BUILD_ROOT%{_prefix}/lib/tmpfiles.d/mysql.conf
 %endif
 
-# Fix funny permissions that cmake build scripts apply to config files
-chmod 644 ${RPM_BUILD_ROOT}%{_datadir}/mysql/config.*.ini
-
 # Fix scripts for multilib safety
 mv ${RPM_BUILD_ROOT}%{_bindir}/mysqlbug ${RPM_BUILD_ROOT}%{_libdir}/mysql/mysqlbug
 install -m 0755 scriptstub ${RPM_BUILD_ROOT}%{_bindir}/mysqlbug
@@ -664,7 +661,6 @@ fi
 %{_datadir}/mysql/mysql_system_tables_data.sql
 %{_datadir}/mysql/mysql_test_data_timezone.sql
 %{_datadir}/mysql/my-*.cnf
-%{_datadir}/mysql/config.*.ini
 
 %{_unitdir}/mysqld.service
 %{_libexecdir}/mysqld-prepare-db-dir
