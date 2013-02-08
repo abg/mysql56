@@ -1,4 +1,4 @@
-Name: mysql
+Name: mysql56
 Version: 5.6.10
 Release: 0%{?dist}
 
