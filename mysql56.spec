@@ -698,11 +698,14 @@ fi
 
 %{_datadir}/mysql/my-*.cnf
 
+%if 0%{?fedora} > 14
 %{_unitdir}/mysqld.service
 %{_libexecdir}/mysqld-prepare-db-dir
 %{_libexecdir}/mysqld-wait-ready
 
 %{_prefix}/lib/tmpfiles.d/mysql.conf
+%endif
+
 %attr(0755,mysql,mysql) %dir /var/run/mysqld
 %attr(0755,mysql,mysql) %dir /var/lib/mysql
 %attr(0640,mysql,mysql) %config(noreplace) %verify(not md5 size mtime) /var/log/mysqld.log
