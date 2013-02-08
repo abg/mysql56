@@ -395,12 +395,6 @@ install -m 0755 scriptstub ${RPM_BUILD_ROOT}%{_bindir}/mysqlbug
 mv ${RPM_BUILD_ROOT}%{_bindir}/mysql_config ${RPM_BUILD_ROOT}%{_libdir}/mysql/mysql_config
 install -m 0755 scriptstub ${RPM_BUILD_ROOT}%{_bindir}/mysql_config
 
-# Remove libmysqld.a, install libmysqld.so
-rm -f ${RPM_BUILD_ROOT}%{_libdir}/mysql/libmysqld.a
-install -m 0755 libmysqld/work/libmysqld.so.0.0.1 ${RPM_BUILD_ROOT}%{_libdir}/mysql/libmysqld.so.0.0.1
-ln -s libmysqld.so.0.0.1 ${RPM_BUILD_ROOT}%{_libdir}/mysql/libmysqld.so.0
-ln -s libmysqld.so.0 ${RPM_BUILD_ROOT}%{_libdir}/mysql/libmysqld.so
-
 # libmysqlclient_r is no more.  Upstream tries to replace it with symlinks
 # but that really doesn't work (wrong soname in particular).  We'll keep
 # just the devel libmysqlclient_r.so link, so that rebuilding without any
