@@ -416,6 +416,8 @@ rm -f ${RPM_BUILD_ROOT}/usr/INSTALL-BINARY
 rm -f ${RPM_BUILD_ROOT}/usr/docs/ChangeLog
 rm -f ${RPM_BUILD_ROOT}/usr/data/mysql/.empty
 rm -f ${RPM_BUILD_ROOT}/usr/data/test/.empty
+rm -f ${RPM_BUILD_ROOT}/usr/share/mysql/solaris/postinstall-solaris
+
 # should move this to /etc/ ?
 rm -f ${RPM_BUILD_ROOT}%{_bindir}/mysqlaccess.conf
 rm -f ${RPM_BUILD_ROOT}%{_bindir}/mysql_embedded
@@ -529,6 +531,7 @@ fi
 %{_bindir}/mysqlshow
 %{_bindir}/mysqlslap
 %{_bindir}/my_print_defaults
+%{_bindir}/mysql_config_editor
 
 %{_mandir}/man1/mysql.1*
 %{_mandir}/man1/mysql_config.1*
@@ -540,6 +543,7 @@ fi
 %{_mandir}/man1/mysqlshow.1*
 %{_mandir}/man1/mysqlslap.1*
 %{_mandir}/man1/my_print_defaults.1*
+%{_mandir}/man1/mysql_config_editor.1*
 
 %{_libdir}/mysql/mysql_config
 
@@ -577,6 +581,7 @@ fi
 %lang(es) %{_datadir}/mysql/spanish
 %lang(sv) %{_datadir}/mysql/swedish
 %lang(uk) %{_datadir}/mysql/ukrainian
+%lang(bg) %{_datadir}/mysql/bulgarian
 %{_datadir}/mysql/charsets
 
 %files server
@@ -654,6 +659,10 @@ fi
 %{_datadir}/mysql/mysql_system_tables.sql
 %{_datadir}/mysql/mysql_system_tables_data.sql
 %{_datadir}/mysql/mysql_test_data_timezone.sql
+%{_datadir}/mysql/innodb_memcached_config.sql
+%{_datadir}/mysql/mysql_security_commands.sql
+%{_datadir}/mysql/dictionary.txt
+
 %{_datadir}/mysql/my-*.cnf
 
 %{_unitdir}/mysqld.service
