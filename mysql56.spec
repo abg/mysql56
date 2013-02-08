@@ -21,12 +21,13 @@ Source0: mysql-%{version}-nodocs.tar.gz
 # the tarball into the current directory:
 # ./generate-tarball.sh $VERSION
 Source1: generate-tarball.sh
+Source2: mysql.init
 Source3: my.cnf
 Source4: scriptstub.c
 Source5: my_config.h
 Source6: README.mysql-docs
 Source7: README.mysql-license
-#Source8: libmysql.version
+Source8: libmysql.version
 Source9: mysql-embedded-check.c
 Source10: mysql.tmpfiles.d
 Source11: mysqld.service
@@ -374,10 +375,14 @@ touch $RPM_BUILD_ROOT/var/log/mysqld.log
 
 mkdir -p $RPM_BUILD_ROOT/var/run/mysqld
 install -m 0755 -d $RPM_BUILD_ROOT/var/lib/mysql
+%if 0%{?fedora} < 15
+install -m 0755 %{SOURCE2} %{buildroot}/etc/rc.d/init.d/mysqld
+%endif
 
 mkdir -p $RPM_BUILD_ROOT/etc
 install -m 0644 %{SOURCE3} $RPM_BUILD_ROOT/etc/my.cnf
 
+%if 0%{?fedora} > 14
 # install systemd unit files and scripts for handling server startup
 mkdir -p ${RPM_BUILD_ROOT}%{_unitdir}
 install -m 644 %{SOURCE11} ${RPM_BUILD_ROOT}%{_unitdir}/
@@ -385,7 +390,6 @@ install -m 755 %{SOURCE12} ${RPM_BUILD_ROOT}%{_libexecdir}/
 install -m 755 %{SOURCE13} ${RPM_BUILD_ROOT}%{_libexecdir}/
 
 mkdir -p $RPM_BUILD_ROOT%{_prefix}/lib/tmpfiles.d
-%if 0%{?fedora} > 14
 install -m 0644 %{SOURCE10} $RPM_BUILD_ROOT%{_prefix}/lib/tmpfiles.d/mysql.conf
 %endif
 
@@ -458,6 +462,11 @@ rm -rf $RPM_BUILD_ROOT
 /sbin/ldconfig
 
 %post server
+%if 0%{?fedora} < 15
+if [ $1 = 1 ]; then
+    /sbin/chkconfig --add mysqld
+fi
+%else
 %if 0%{?systemd_post:1}
 %systemd_post mysqld.service
 %else
@@ -466,6 +475,7 @@ if [ $1 = 1 ]; then
     /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 fi
 %endif
+%endif
 /bin/chmod 0755 /var/lib/mysql
 /bin/touch /var/log/mysqld.log
 
@@ -473,6 +483,7 @@ fi
 # We can tell if a SysV version of mysql was previously installed by
 # checking to see if the initscript is present.
 %triggerun server -- mysql-server
+%if 0%{?fedora} > 14
 if [ -f /etc/rc.d/init.d/mysqld ]; then
     # Save the current service runlevel info
     # User must manually run systemd-sysv-convert --apply mysqld
@@ -483,8 +494,15 @@ if [ -f /etc/rc.d/init.d/mysqld ]; then
     /sbin/chkconfig --del mysqld >/dev/null 2>&1 || :
     /bin/systemctl try-restart mysqld.service >/dev/null 2>&1 || :
 fi
+%endif
 
 %preun server
+%if 0%{?fedora} < 15
+if [ $1 = 0 ]; then
+    /sbin/service mysqld stop >/dev/null 2>&1
+    /sbin/chkconfig --del mysqld
+fi
+%else
 %if 0%{?systemd_preun:1}
 %systemd_preun mysqld.service
 %else
@@ -494,6 +512,8 @@ if [ $1 = 0 ]; then
     /bin/systemctl stop mysqld.service >/dev/null 2>&1 || :
 fi
 %endif
+%endif
+
 
 %postun libs
 if [ $1 = 0 ] ; then
@@ -501,6 +521,11 @@ if [ $1 = 0 ] ; then
 fi
 
 %postun server
+%if 0%{?fedora} < 15
+if [ $1 -ge 1 ]; then
+    /sbin/service mysqld condrestart >/dev/null 2>&1 || :
+fi
+%else
 %if 0%{?systemd_postun_with_restart:1}
 %systemd_postun_with_restart mysqld.service
 %else
@@ -509,6 +534,7 @@ if [ $1 -ge 1 ]; then
     # Package upgrade, not uninstall
     /bin/systemctl try-restart mysqld.service >/dev/null 2>&1 || :
 fi
+%endif
 %endif
 
 
