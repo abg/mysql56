@@ -66,7 +66,9 @@ BuildRequires: systemtap-sdt-devel
 BuildRequires: time procps
 # Socket and Time::HiRes are needed to run regression tests
 BuildRequires: perl(Socket), perl(Time::HiRes)
+%if 0%{?fedora} > 14
 BuildRequires: systemd-units
+%endif
 
 Requires: grep, fileutils
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
@@ -109,6 +111,11 @@ Requires: sh-utils
 Requires(pre): /usr/sbin/useradd
 Requires(post): chkconfig
 Requires(preun): chkconfig
+%if 0%{?fedora} < 15
+# This is for /sbin/service
+Requires(preun): initscripts
+Requires(postun): initscripts
+%else
 # We require this to be present for %%{_prefix}/lib/tmpfiles.d
 Requires: systemd-units
 # Make sure it's there when scriptlets run, too
@@ -119,6 +126,7 @@ Requires(postun): systemd-units
 # is not valid.  We can use %%post because this particular %%triggerun script
 # should fire just after this package is installed.
 Requires(post): systemd-sysv
+%endif
 # mysqlhotcopy needs DBI/DBD support
 Requires: perl-DBI, perl-DBD-MySQL
 Conflicts: MySQL-server
