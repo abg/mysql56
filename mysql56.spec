@@ -286,7 +286,11 @@ cmake . -DBUILD_CONFIG=mysql_release \
 	-DENABLE_DTRACE=ON \
 	-DWITH_EMBEDDED_SERVER=ON \
 	-DWITH_READLINE=ON \
+%if 0%{?rhel} == 5
+	-DWITH_SSL=bundled \
+%else
 	-DWITH_SSL=system \
+%endif
 	-DWITH_ZLIB=system
 
 gcc $CFLAGS $LDFLAGS -o scriptstub "-DLIBDIR=\"%{_libdir}/mysql\"" %{SOURCE4}
