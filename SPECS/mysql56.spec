@@ -1,6 +1,6 @@
 Name: mysql56
 Version: 5.6.10
-Release: 0%{?dist}
+Release: 1%{?dist}
 
 Summary: MySQL client programs and shared libraries
 Group: Applications/Databases
@@ -750,6 +750,16 @@ fi
 %{_mandir}/man1/mysql_client_test.1*
 
 %changelog
+* Fri Feb 08 2013 Andrew Garner <muzazzi@gmail.com> - 5.6.10-1
+- Porting from IUS mysql55
+- Renamed package to mysql56
+- Reworked relevant patches against mysql-5.6.10
+- drop innobase patches from mysql-string-overflow.patch 
+- Wrapped systemd/initscripts with conditionals for building
+  on RHEL5/RHEL6 as well as Fedora
+- added mysql-embedded.patch from http://bugs.mysql.com/39288
+- added mysql-versioning.patch to replace libmysql.version
+
 * Sat Sep 29 2012 Tom Lane <tgl@redhat.com> 5.5.28-1
 - Update to MySQL 5.5.28, for various fixes described at
   http://dev.mysql.com/doc/refman/5.5/en/news-5-5-28.html
