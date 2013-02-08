@@ -704,6 +704,8 @@ fi
 %{_libexecdir}/mysqld-wait-ready
 
 %{_prefix}/lib/tmpfiles.d/mysql.conf
+%else
+/etc/rc.d/init.d/mysqld
 %endif
 
 %attr(0755,mysql,mysql) %dir /var/run/mysqld
