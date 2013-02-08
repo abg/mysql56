@@ -383,7 +383,7 @@ touch $RPM_BUILD_ROOT/var/log/mysqld.log
 mkdir -p $RPM_BUILD_ROOT/var/run/mysqld
 install -m 0755 -d $RPM_BUILD_ROOT/var/lib/mysql
 %if 0%{?fedora} < 15
-install -m 0755 %{SOURCE2} %{buildroot}/etc/rc.d/init.d/mysqld
+install -m 0755 -D %{SOURCE2} %{buildroot}/etc/rc.d/init.d/mysqld
 %endif
 
 mkdir -p $RPM_BUILD_ROOT/etc
